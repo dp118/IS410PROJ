@@ -1,0 +1,137 @@
+
+-- Table Creation
+CREATE TABLE Artist_T
+    (ArtistID       NUMBER(5)   NOT NULL,
+    ArtistName      VARCHAR(50) NOT NULL,
+    Age             NUMBER(2)   NOT NULL,
+    Birthplace      VARCHAR(25) NOT NULL,
+    NumberofPieces  NUMBER(3)   NOT NULL,
+CONSTRAINT ArtistID_PK PRIMARY KEY (ArtistID));
+
+CREATE TABLE Artwork_T
+    (ArtworkID      NUMBER(7)   NOT NULL,
+    ArtistID        NUMBER(5)   NOT NULL,
+    Title           VARCHAR(25) NOT NULL,
+    YearMade        NUMBER(4)   NOT NULL,
+    StyleofArt      VARCHAR(25) 
+        CHECK (StyleofArt IN ('Painting', 'Scultpture')),
+    Price           NUMBER(8,2) NOT NULL,
+CONSTRAINT ArtworkID_PK PRIMARY KEY (ArtworkID),
+CONSTRAINT ArtistID_FK FOREIGN KEY (ArtistID) REFERENCES Artist_T(ArtistID));
+
+CREATE TABLE Customer_T
+    (CustomerID     NUMBER(6)   NOT NULL,
+    CustomerName    VARCHAR(25) NOT NULL,
+    Email           VARCHAR(50) NOT NULL,
+    PhoneNum        NUMBER(10)  NOT NULL,
+    CustAddress         VARCHAR(25) NOT NULL,
+    CustCity            VARCHAR(25) NOT NULL,
+    CustState           VARCHAR(2)  NOT NULL,
+    CustZIP             NUMBER(6)   NOT NULL,
+CONSTRAINT CustomerID_PK PRIMARY KEY (CustomerID));
+
+CREATE TABLE Order_T
+    (OrderID        NUMBER(9)   NOT NULL,
+    CustomerID      NUMBER(6)   NOT NULL,
+    ArtWorkID       NUMBER(7)   NOT NULL,
+CONSTRAINT OrderID_PK PRIMARY KEY (OrderID),
+CONSTRAINT CustomerID_FK FOREIGN KEY (CustomerID) REFERENCES Customer_T(CustomerID),
+CONSTRAINT ArtworkID_FK FOREIGN KEY (ArtworkID) REFERENCES Artwork_T(ArtworkID));
+
+--Input data 
+INSERT INTO Artist_T VALUES (61727,'Sandro Botticelli', 64, 'Florence', 137);
+INSERT INTO Artist_T VALUES (26912,'Donatello', 80, 'Florence', 13);
+INSERT INTO Artist_T VALUES (65687,'Michelangelo Buonarroti', 88, 'Tuscany', 123);
+INSERT INTO Artist_T VALUES (62292,'Leonardo da Vinci', 67, 'Florence', 87);
+INSERT INTO Artist_T VALUES (70158,'Raphael Sanzio', 37, 'Urbino', 166);
+INSERT INTO Artist_T VALUES (63705,'Oscar Claude Monet', 86, 'Paris', 265);
+
+INSERT INTO Artwork_T VALUES (4442948, 61727, 'Fortitude', 1470, 'Painting', 262736.44);
+INSERT INTO Artwork_T VALUES (4442949, 61727, 'Primavera', 1482, 'Painting', 598979.48);
+INSERT INTO Artwork_T VALUES (4442950, 61727, 'Venus and Mars', 1483, 'Painting',704207.80);
+INSERT INTO Artwork_T VALUES (1096529, 26912, 'Saint Mark', 1411, 'Scultpture', 118520.66);
+INSERT INTO Artwork_T VALUES (1096530, 26912, 'David', 1411, 'Scultpture', 729494.96);
+INSERT INTO Artwork_T VALUES (1637183, 65687, 'The Last Judgement', 1541, 'Painting', 348576.39);
+INSERT INTO Artwork_T VALUES (1637184, 65687, 'David', 1504, 'Scultpture', 788525.78);
+INSERT INTO Artwork_T VALUES (9165685, 62292, 'Mona Lisa', 1519, 'Painting', 13005.51);
+INSERT INTO Artwork_T VALUES (9165686, 62292, 'The Last Supper', 1498, 'Painting', 14928.25);
+INSERT INTO Artwork_T VALUES (9165687, 62292, 'Annunciation', 1475, 'Painting', 33220.35);
+INSERT INTO Artwork_T VALUES (4016570, 70158, 'School of Athens', 1510, 'Painting', 302426.76);
+INSERT INTO Artwork_T VALUES (5729862, 63705, 'The Magpie', 1869, 'Painting', 328298.60);
+INSERT INTO Artwork_T VALUES (5729863, 63705, 'Woman with a Parasol', 1875, 'Painting', 754412.42);
+INSERT INTO Artwork_T VALUES (5729864, 63705, 'Women in the Garden', 1867, 'Painting', 89988.08);
+
+INSERT INTO Customer_T VALUES (166825,'Donna Alexander', 'donnaalexander4394@hotmail.com', 
+8094948610, '1716 Amet Av.', 'Sandy', 'UT', 52933);
+INSERT INTO Customer_T VALUES (539873,'Cole Mcmahon', 'colemcmahon1224@google.com', 
+2168643275, '1965 Aliquam St', 'Davenport', 'IA', 71489);
+INSERT INTO Customer_T VALUES (049778,'Dacey Mckee', 'daceymckee3239@outlook.com', 
+7427133727, '8021 Non Rd', 'Davenport', 'IA', 24996);
+INSERT INTO Customer_T VALUES (301614,'Amena Reese', 'amenareese@aol.com', 
+6938293788, '9820 Donec Av', 'Tucson', 'AZ', 23241);
+INSERT INTO Customer_T VALUES (112887,'Dante Durham', 'dantedurham@gmail.com', 
+5565405018, '5708 Nulla Rd', 'Lincoln', 'NE', 24996);
+
+INSERT INTO Order_T VALUES (615499676, 166825, 4442949);
+INSERT INTO Order_T VALUES (615499677, 166825, 4442950);
+INSERT INTO Order_T VALUES (332221801, 301614, 1637184);
+INSERT INTO Order_T VALUES (798649806, 049778, 1096529);
+INSERT INTO Order_T VALUES (211966180, 539873, 9165685);
+INSERT INTO Order_T VALUES (211966181, 539873, 1637184);
+INSERT INTO Order_T VALUES (211966182, 539873, 9165686);
+INSERT INTO Order_T VALUES (391219243, 166825, 5729863);
+INSERT INTO Order_T VALUES (594047367, 301614, 4442949);
+INSERT INTO Order_T VALUES (456040691, 166825, 5729863);
+
+-- Join Queries with Group By
+SELECT CustomerName, CustState, CustZIP
+FROM Customer_T, Order_T
+LEFT JOIN Artist_T on 
+Customer_T.CustomerID = Order_T.CustomerID
+GROUP BY CustState, CustZIP;
+
+SELECT ArtistName, Birthplace, Title
+FROM Artist_T
+LEFT JOIN Artwork_T on 
+Artist_T.ArtistID = Artwork_T.ArtistID
+GROUP BY Birthplace;
+
+-- Additional Join Queries
+SELECT CustomerName, CustAddress
+FROM Customer_T
+INNER JOIN Order_T
+ON Customer_T.CustomerID = Order_T.CustomerID;
+
+SELECT ArtistName, Title
+FROM Artwork_T
+INNER JOIN Artwork_T
+ON Artist_T.ArtistID = Artwork_T.ArtistID
+WHERE ArtistID = 61727;
+
+SELECT CustomerName, Address, CustState, CustZIP
+FROM Customer_T, Order_T
+LEFT JOIN Artist_T ON 
+Customer_T.CustomerID = Order_T.CustomerID;
+
+SELECT ArtistName, Birthplace
+FROM Artist_T
+RIght Outer JOIN Artwork_T ON 
+Artist_T.ArtistID = Artwork_T.ArtistID;
+
+-- Select Statements 
+SELECT CustomerName, CustAddress, CustCity, CustState, CustZip
+FROM Customer_T
+WHERE CustState = 'IA';
+
+SELECT ArtistName, Title
+FROM Artist_T, Artwork_T
+WHERE ArtistName = "Leonardo da Vinci";
+
+-- Update Statements
+UPDATE Customer_T
+SET PhoneNum = 2735343281
+WHERE CustomerID = 539873;
+
+UPDATE Artist_T
+SET NumberofPieces = 16
+WHERE ArtistID = 26912;
